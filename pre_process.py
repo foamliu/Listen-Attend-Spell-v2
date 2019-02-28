@@ -1,37 +1,34 @@
 import os
 import pickle
 
-import cv2 as cv
-import mxnet as mx
-from mxnet import recordio
-from tqdm import tqdm
+from config import pickle_file, train_folder, test_folder, data_folder
 
-from config import path_imgidx, path_imgrec, IMG_DIR, pickle_file
-from utils import ensure_folder
 
-if __name__ == "__main__":
-    ensure_folder(IMG_DIR)
-    imgrec = recordio.MXIndexedRecordIO(path_imgidx, path_imgrec, 'r')
+def get_data(mode):
+    print('getting {} data...'.format(mode))
+    if mode == 'train':
+        folder = train_folder
+    else:
+        folder = test_folder
 
     samples = []
+    waves = [f for f in os.listdir(folder) if f.lower().endswith('.wav')]
+    for w in waves:
+        trn_path = os.path.join(data_folder, w + '.trn')
+        with open(trn_path, 'r', encoding='utf-8') as file:
+            trn = file.readline()
+        trn = trn.strip().replace(' ', '')
+        samples.append({'wave': w, 'trn': trn})
+    return samples
 
-    # %% 1 ~ 3804847
-    for i in tqdm(range(3804846)):
-        try:
-            header, s = recordio.unpack(imgrec.read_idx(i + 1))
-            img = mx.image.imdecode(s).asnumpy()
-            img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
-            label = int(header.label)
-            filename = '{}.png'.format(i)
-            samples.append({'img': filename, 'label': label})
-            filename = os.path.join(IMG_DIR, filename)
-            cv.imwrite(filename, img)
-        except KeyboardInterrupt:
-            raise
-        except:
-            pass
+
+if __name__ == "__main__":
+    data = dict()
+
+    data['train'] = get_data('train')
+    print('num_train: ' + str(len(data['train'])))
+    data['test'] = get_data('test')
+    print('num_test: ' + str(len(data['test'])))
 
     with open(pickle_file, 'wb') as file:
-        pickle.dump(samples, file)
-
-    print('num_samples: ' + str(len(samples)))
+        pickle.dump(data, file)

@@ -16,11 +16,12 @@ print_freq = 100  # print training/validation stats  every __ batches
 checkpoint = None  # path to checkpoint, None if none
 
 # Data parameters
-num_classes = 85164
-num_samples = 3804846
+num_train = 10000
+num_test = 2495
 DATA_DIR = 'data'
 thchs30_folder = 'data/data_thchs30'
 train_folder = os.path.join(thchs30_folder, 'train')
 test_folder = os.path.join(thchs30_folder, 'test')
+data_folder = os.path.join(thchs30_folder, 'data')
 IMG_DIR = 'data/images'
 pickle_file = 'data/thchs30.pickle'

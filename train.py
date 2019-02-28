@@ -9,7 +9,7 @@ from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
 from config import device, grad_clip, print_freq
-from data_gen import ArcFaceDataset
+from data_gen import Thchs30Dataset
 from focal_loss import FocalLoss
 from lfw_eval import lfw_test
 from models import resnet18, resnet34, resnet50, resnet101, resnet152, resnet_face18, ArcMarginModel
@@ -81,7 +81,7 @@ def train_net(args):
         criterion = nn.CrossEntropyLoss().to(device)
 
     # Custom dataloaders
-    train_dataset = ArcFaceDataset('train')
+    train_dataset = Thchs30Dataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
 
     scheduler = StepLR(optimizer, step_size=args.lr_step, gamma=0.1)

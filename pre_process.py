@@ -3,6 +3,7 @@ import pickle
 
 import librosa
 import numpy as np
+from tqdm import tqdm
 
 from config import dim, window_size, stride, cmvn
 from config import pickle_file, train_folder, test_folder, data_folder
@@ -38,7 +39,7 @@ def get_data(mode):
 
     samples = []
     waves = [f for f in os.listdir(folder) if f.lower().endswith('.wav')]
-    for w in waves:
+    for w in tqdm(waves):
         trn_path = os.path.join(data_folder, w + '.trn')
         with open(trn_path, 'r', encoding='utf-8') as file:
             trn = file.readline()

@@ -22,7 +22,7 @@ class Seq2Seq(nn.Module):
         """
         encoder_padded_outputs, _ = self.encoder(padded_input, input_lengths)
         loss = self.decoder(padded_target, encoder_padded_outputs)
-        return loss
+        return loss.mean()
 
     def recognize(self, input, input_length, char_list, args):
         """Sequence-to-Sequence beam search, decode one utterence now.

@@ -97,13 +97,14 @@ def train(train_loader, encoder, decoder, optimizer, epoch, logger):
     losses = AverageMeter()
 
     # Batches
-    for i, (feature, trn) in enumerate(train_loader):
+    for i, (features, trns, input_lengths) in enumerate(train_loader):
         # Move to GPU, if available
-        feature = feature.to(device)
-        trn = trn.to(device)  # [N, 1]
+        features = features.float().to(device)
+        trns = trns.long().to(device)
+        input_lengths = input_lengths.long().to(device)
 
         # Forward prop.
-        loss = model(feature, feature.size()[1], trn)
+        loss = model(features, input_lengths, trns)
 
         # Back prop.
         optimizer.zero_grad()
@@ -135,13 +136,14 @@ def valid(valid_loader, encoder, decoder, epoch, logger):
     losses = AverageMeter()
 
     # Batches
-    for i, (feature, trn) in enumerate(valid_loader):
+    for i, (features, trns, input_lengths) in enumerate(valid_loader):
         # Move to GPU, if available
-        feature = feature.to(device)
-        trn = trn.to(device)  # [N, 1]
+        features = features.float().to(device)
+        trns = trns.long().to(device)
+        input_lengths = input_lengths.long().to(device)
 
         # Forward prop.
-        loss = model(feature, feature.size()[1], trn)
+        loss = model(features, input_lengths, trns)
 
         # Keep track of metrics
         losses.update(loss.item())

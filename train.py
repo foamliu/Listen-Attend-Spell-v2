@@ -50,7 +50,7 @@ def train_net(args):
     train_dataset = Thchs30Dataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=True)
-    valid_dataset = Thchs30Dataset('train')
+    valid_dataset = Thchs30Dataset('test')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=False)
 

@@ -1,9 +1,30 @@
 import pickle
 
+import numpy as np
 import torch
 from torch.utils.data import Dataset
+from torch.utils.data.dataloader import default_collate
 
 from config import num_workers, pickle_file
+
+
+def pad_collate(batch):
+    max_input_len = float('-inf')
+    max_target_len = float('-inf')
+
+    for elem in batch:
+        feature, trn = elem
+        max_input_len = max_input_len if max_input_len > feature.shape[0] else feature.shape[0]
+        max_target_len = max_target_len if max_target_len > len(trn) else len(trn)
+
+    for i, elem in enumerate(batch):
+        feature, trn = elem
+        feature = np.pad(feature, (0, max_input_len - feature.shape[0]), 'constant', constant_values=0)
+        trn = np.pad(trn, (0, max_target_len - len(trn)), 'constant', constant_values=0)
+        batch[i] = (feature, trn)
+        # print('feature.shape: ' + str(feature.shape))
+        # print('trn.shape: ' + str(trn.shape))
+    return default_collate(batch)
 
 
 class Thchs30Dataset(Dataset):
@@ -28,8 +49,7 @@ class Thchs30Dataset(Dataset):
 
 if __name__ == "__main__":
     train_dataset = Thchs30Dataset('train')
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True,
-                                               num_workers=num_workers,
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=num_workers,
                                                pin_memory=True)
 
     print(len(train_dataset))

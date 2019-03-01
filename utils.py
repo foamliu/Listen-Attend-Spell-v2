@@ -77,7 +77,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Listen Attend and Spell')
     # general
     parser.add_argument('--input-dim', type=int, default=40, help='input dimension')
-    parser.add_argument('--hidden-size', type=int, default=512, help='hidden size')
+    parser.add_argument('--encoder-hidden-size', type=int, default=512, help='encoder hidden size')
+    parser.add_argument('--decoder-hidden-size', type=int, default=1024, help='decoder hidden size')
     parser.add_argument('--num-layers', type=int, default=4, help='number of encoder layers')
     parser.add_argument('--embedding-dim', type=int, default=512, help='embedding dimension')
     parser.add_argument('--end-epoch', type=int, default=30, help='training epoch size.')

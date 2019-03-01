@@ -19,8 +19,8 @@ def train_net(args):
 
     # Initialize / load checkpoint
     if checkpoint is None:
-        encoder = Encoder(args.input_dim, args.hidden_size, args.num_layers)
-        decoder = Decoder(vocab_size, args.embedding_dim, args.hidden_size)
+        encoder = Encoder(args.input_dim, args.encoder_hidden_size, args.num_layers)
+        decoder = Decoder(vocab_size, args.embedding_dim, args.decoder_hidden_size)
 
         encoder = nn.DataParallel(encoder)
         decoder = nn.DataParallel(decoder)

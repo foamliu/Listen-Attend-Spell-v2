@@ -80,10 +80,14 @@ if __name__ == "__main__":
     data['IVOCAB'] = IVOCAB
     data['train'] = get_data('train')
     data['test'] = get_data('test')
+    data['max_input_len'] = max_input_len
+    data['max_target_len'] = max_target_len
+
+    with open(pickle_file, 'wb') as file:
+        pickle.dump(data, file)
 
     print('num_train: ' + str(len(data['train'])))
     print('num_test: ' + str(len(data['test'])))
     print('vocab_size: ' + str(len(data['VOCAB'])))
-
-    with open(pickle_file, 'wb') as file:
-        pickle.dump(data, file)
+    print('max_input_len: ' + str(max_input_len))
+    print('max_target_len: ' + str(max_target_len))

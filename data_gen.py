@@ -18,9 +18,9 @@ class Thchs30Dataset(Dataset):
 
     def __getitem__(self, i):
         sample = self.samples[i]
-        wave = sample['wave']
+        feature = sample['feature']
         trn = sample['trn']
-        return wave, trn
+        return feature, trn
 
     def __len__(self):
         return len(self.samples)

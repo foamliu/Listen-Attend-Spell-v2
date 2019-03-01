@@ -28,6 +28,9 @@ def pad_collate(batch):
         batch[i] = (feature, trn, input_length)
         # print('feature.shape: ' + str(feature.shape))
         # print('trn.shape: ' + str(trn.shape))
+
+    batch.sort(key=lambda x: x[2], reverse=True)
+
     return default_collate(batch)
 
 

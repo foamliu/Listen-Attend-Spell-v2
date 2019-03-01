@@ -41,7 +41,7 @@ class Seq2Seq(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, dropout, bidirectional):
+    def __init__(self, input_size, hidden_size, num_layers, dropout=0.0, bidirectional=True):
         super(Encoder, self).__init__()
         self.rnn = nn.GRU(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout,
                           bidirectional=bidirectional)
@@ -55,8 +55,7 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_size,
-                 num_layers, bidirectional_encoder=True):
+    def __init__(self, vocab_size, embedding_dim, hidden_size, num_layers=1):
         super(Decoder, self).__init__()
         # Hyper parameters
         # embedding + output
@@ -65,7 +64,6 @@ class Decoder(nn.Module):
         # rnn
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.bidirectional_encoder = bidirectional_encoder  # useless now
         self.encoder_hidden_size = hidden_size  # must be equal now
         # Components
         self.embedding = nn.Embedding(self.vocab_size, self.embedding_dim)

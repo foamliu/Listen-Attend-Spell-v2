@@ -5,11 +5,13 @@ import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # sets device for model and PyTorch tensors
 
 # Model parameters
-dim = 40  # dimension of feature
+input_dim = 40  # dimension of feature
 window_size = 25  # window size for FFT (ms)
 hidden_size = 512
+embedding_dim = 512
 stride = 10  # window stride for FFT
 cmvn = True  # apply CMVN on feature
+num_layers = 4
 
 # Training parameters
 batch_size = 32
@@ -25,6 +27,8 @@ SOS_token = 1
 EOS_token = 2
 num_train = 10000
 num_test = 2495
+vocab_size = 2886
+
 DATA_DIR = 'data'
 thchs30_folder = 'data/data_thchs30'
 train_folder = os.path.join(thchs30_folder, 'train')

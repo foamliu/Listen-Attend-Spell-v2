@@ -16,14 +16,14 @@ def clip_gradient(optimizer, grad_clip):
                 param.grad.data.clamp_(-grad_clip, grad_clip)
 
 
-def save_checkpoint(epoch, epochs_since_improvement, model, metric_fc, optimizer, acc, is_best):
+def save_checkpoint(epoch, epochs_since_improvement, encoder, decoder, optimizer, loss, is_best):
     state = {'epoch': epoch,
              'epochs_since_improvement': epochs_since_improvement,
-             'acc': acc,
-             'model': model,
-             'metric_fc': metric_fc,
+             'loss': loss,
+             'encoder': encoder,
+             'decoder': decoder,
              'optimizer': optimizer}
-    # filename = 'checkpoint_' + str(epoch) + '_' + str(loss) + '.tar'
+
     filename = 'checkpoint.tar'
     torch.save(state, filename)
     # If this checkpoint is the best so far, store a copy so it doesn't get overwritten by a worse checkpoint
@@ -74,10 +74,12 @@ def accuracy(scores, targets, k=1):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train face network')
+    parser = argparse.ArgumentParser(description='Listen Attend and Spell')
     # general
-    parser.add_argument('--pretrained', type=bool, default=False, help='pretrained model')
-    parser.add_argument('--network', default='r50', help='specify network')
+    parser.add_argument('--input-dim', type=int, default=40, help='input dimension')
+    parser.add_argument('--hidden-size', type=int, default=512, help='hidden size')
+    parser.add_argument('--num-layers', type=int, default=4, help='number of encoder layers')
+    parser.add_argument('--embedding-dim', type=int, default=512, help='embedding dimension')
     parser.add_argument('--end-epoch', type=int, default=30, help='training epoch size.')
     parser.add_argument('--lr', type=float, default=0.001, help='start learning rate')
     parser.add_argument('--lr-step', type=int, default=10, help='period of learning rate decay')

@@ -4,10 +4,10 @@ from tensorboardX import SummaryWriter
 from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
-from config import device, grad_clip, print_freq
+from config import device, grad_clip, print_freq, vocab_size
 from data_gen import Thchs30Dataset
-from models import Encoder, Decoder
-from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, accuracy, get_logger
+from models import Encoder, Decoder, Seq2Seq
+from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger
 
 
 def train_net(args):
@@ -15,14 +15,14 @@ def train_net(args):
     np.random.seed(7)
     checkpoint = args.checkpoint
     start_epoch = 0
-    best_acc = 0
+    best_loss = float('inf')
     writer = SummaryWriter()
     epochs_since_improvement = 0
 
     # Initialize / load checkpoint
     if checkpoint is None:
-        encoder = Encoder()
-        decoder = Decoder()
+        encoder = Encoder(args.input_dim, args.hidden_size, args.num_layers)
+        decoder = Decoder(vocab_size, args.embedding_dim, args.hidden_size)
 
         encoder = nn.DataParallel(encoder)
         decoder = nn.DataParallel(decoder)
@@ -48,8 +48,6 @@ def train_net(args):
     encoder = encoder.to(device)
     decoder = decoder.to(device)
 
-    criterion = nn.CrossEntropyLoss().to(device)
-
     # Custom dataloaders
     train_dataset = Thchs30Dataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
@@ -63,27 +61,25 @@ def train_net(args):
         scheduler.step()
 
         # One epoch's training
-        train_loss, train_top5_accs = train(train_loader=train_loader,
-                                            encoder=encoder,
-                                            decoder=decoder,
-                                            criterion=criterion,
-                                            optimizer=optimizer,
-                                            epoch=epoch,
-                                            logger=logger)
-        # train_dataset.shuffle()
+        train_loss = train(train_loader=train_loader,
+                           encoder=encoder,
+                           decoder=decoder,
+                           optimizer=optimizer,
+                           epoch=epoch,
+                           logger=logger)
+
         writer.add_scalar('Train_Loss', train_loss, epoch)
-        writer.add_scalar('Train_Top5_Accuracy', train_top5_accs, epoch)
 
         # One epoch's validation
-        valid_loss, valid_top5_accs = valid(valid_loader=valid_loader,
-                                            encoder=encoder,
-                                            decoder=decoder,
-                                            epoch=epoch,
-                                            logger=logger)
+        valid_loss = valid(valid_loader=valid_loader,
+                           encoder=encoder,
+                           decoder=decoder,
+                           epoch=epoch,
+                           logger=logger)
 
         # Check if there was an improvement
-        is_best = valid_top5_accs > best_acc
-        best_acc = max(valid_top5_accs, best_acc)
+        is_best = valid_loss < best_loss
+        best_loss = min(valid_loss, best_loss)
         if not is_best:
             epochs_since_improvement += 1
             print("\nEpochs since last improvement: %d\n" % (epochs_since_improvement,))
@@ -91,15 +87,16 @@ def train_net(args):
             epochs_since_improvement = 0
 
         # Save checkpoint
-        save_checkpoint(epoch, epochs_since_improvement, encoder, decoder, optimizer, best_acc, is_best)
+        save_checkpoint(epoch, epochs_since_improvement, encoder, decoder, optimizer, best_loss, is_best)
 
 
-def train(train_loader, encoder, decoder, criterion, optimizer, epoch, logger):
+def train(train_loader, encoder, decoder, optimizer, epoch, logger):
     encoder.train()  # train mode (dropout and batchnorm is used)
     decoder.train()
 
+    model = Seq2Seq(encoder, decoder)
+
     losses = AverageMeter()
-    top5_accs = AverageMeter()
 
     # Batches
     for i, (feature, trn) in enumerate(train_loader):
@@ -108,11 +105,7 @@ def train(train_loader, encoder, decoder, criterion, optimizer, epoch, logger):
         trn = trn.to(device)  # [N, 1]
 
         # Forward prop.
-        embedding = encoder(feature)  # embedding => [N, 512]
-        output = decoder(embedding, trn)  # class_id_out => [N, 10575]
-
-        # Calculate loss
-        loss = criterion(output, trn)
+        loss = model(feature, feature.size()[1], trn)
 
         # Back prop.
         optimizer.zero_grad()
@@ -126,26 +119,22 @@ def train(train_loader, encoder, decoder, criterion, optimizer, epoch, logger):
 
         # Keep track of metrics
         losses.update(loss.item())
-        top5_accuracy = accuracy(output, trn, 5)
-        top5_accs.update(top5_accuracy)
 
         # Print status
         if i % print_freq == 0:
             logger.info('Epoch: [{0}][{1}/{2}]\t'
-                        'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                        'Top5 Accuracy {top5_accs.val:.3f} ({top5_accs.avg:.3f})'.format(epoch, i, len(train_loader),
-                                                                                         loss=losses,
-                                                                                         top5_accs=top5_accs))
+                        'Loss {loss.val:.4f} ({loss.avg:.4f})'.format(epoch, i, len(train_loader), loss=losses))
 
-    return losses.avg, top5_accs.avg
+    return losses.avg
 
 
 def valid(valid_loader, encoder, decoder, epoch, logger):
     encoder.eval()
     decoder.eval()
 
+    model = Seq2Seq(encoder, decoder)
+
     losses = AverageMeter()
-    top5_accs = AverageMeter()
 
     # Batches
     for i, (feature, trn) in enumerate(valid_loader):
@@ -154,25 +143,18 @@ def valid(valid_loader, encoder, decoder, epoch, logger):
         trn = trn.to(device)  # [N, 1]
 
         # Forward prop.
-        embedding = encoder(feature)  # embedding => [N, 512]
-        output = decoder(embedding, trn)  # class_id_out => [N, 10575]
-
-        loss = 0
+        loss = model(feature, feature.size()[1], trn)
 
         # Keep track of metrics
         losses.update(loss.item())
-        top5_accuracy = accuracy(output, trn, 5)
-        top5_accs.update(top5_accuracy)
 
         # Print status
         if i % print_freq == 0:
             logger.info('Epoch: [{0}][{1}/{2}]\t'
-                        'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                        'Top5 Accuracy {top5_accs.val:.3f} ({top5_accs.avg:.3f})'.format(epoch, i, len(valid_loader),
-                                                                                         loss=losses,
-                                                                                         top5_accs=top5_accs))
+                        'Loss {loss.val:.4f} ({loss.avg:.4f})'.format(epoch, i, len(valid_loader),
+                                                                      loss=losses))
 
-    return losses.avg, top5_accs.avg
+    return losses.avg
 
 
 def main():

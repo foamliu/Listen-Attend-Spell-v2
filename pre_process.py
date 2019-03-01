@@ -37,7 +37,7 @@ def get_data(mode):
     else:
         folder = test_folder
 
-    global max_input_len, max_target_len
+    global max_input_len, max_target_len, VOCAB
 
     samples = []
     waves = [f for f in os.listdir(folder) if f.lower().endswith('.wav')]
@@ -53,6 +53,7 @@ def get_data(mode):
         trn = trn.strip().replace(' ', '')
         for token in trn:
             build_vocab(token)
+        trn = [VOCAB[token] for token in trn]
         if len(trn) > max_target_len:
             max_target_len = len(trn)
 

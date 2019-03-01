@@ -50,7 +50,7 @@ def get_data(mode):
         trn_path = os.path.join(data_folder, w + '.trn')
         with open(trn_path, 'r', encoding='utf-8') as file:
             trn = file.readline()
-        trn = trn.strip().replace(' ', '')
+        trn = list(trn.strip().replace(' ', '')) + ['<EOS>']
         for token in trn:
             build_vocab(token)
         trn = [VOCAB[token] for token in trn]

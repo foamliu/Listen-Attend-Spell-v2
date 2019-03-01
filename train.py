@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-from tensorboardX import SummaryWriter
 from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
@@ -16,7 +15,6 @@ def train_net(args):
     checkpoint = args.checkpoint
     start_epoch = 0
     best_loss = float('inf')
-    writer = SummaryWriter()
     epochs_since_improvement = 0
 
     # Initialize / load checkpoint
@@ -67,8 +65,6 @@ def train_net(args):
                            optimizer=optimizer,
                            epoch=epoch,
                            logger=logger)
-
-        writer.add_scalar('Train_Loss', train_loss, epoch)
 
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,

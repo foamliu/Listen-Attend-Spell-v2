@@ -7,10 +7,14 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # sets de
 # Model parameters
 dim = 40  # dimension of feature
 window_size = 25  # window size for FFT (ms)
+hidden_size = 512
+
 stride = 10  # window stride for FFT
 cmvn = True  # apply CMVN on feature
 
 # Training parameters
+batch_size = 32
+lr = 1e-3
 num_workers = 1  # for data-loading; right now, only 1 works with h5py
 grad_clip = 5.  # clip gradients at an absolute value of
 print_freq = 100  # print training/validation stats  every __ batches

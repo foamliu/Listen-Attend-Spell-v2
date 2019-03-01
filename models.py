@@ -94,7 +94,6 @@ class Decoder(nn.Module):
         """
         # *********Get Input and Output
         # from espnet/Decoder.forward()
-        # TODO: need to make more smart way
         ys = [y[y != PAD_token] for y in padded_input]  # parse padded ys
         # prepare input and output word sequences with sos/eos IDs
         eos = ys[0].new([EOS_token])
@@ -105,11 +104,9 @@ class Decoder(nn.Module):
         # pys: utt x olen
         ys_in_pad = pad_list(ys_in, EOS_token)
         ys_out_pad = pad_list(ys_out, PAD_token)
-        # print("ys_in_pad", ys_in_pad.size())
         assert ys_in_pad.size() == ys_out_pad.size()
         batch_size = ys_in_pad.size(0)
         output_length = ys_in_pad.size(1)
-        # max_length = ys_in_pad.size(1) - 1  # TODO: should minus 1(sos)?
 
         # *********Init decoder rnn
         h_list = [self.zero_state(encoder_padded_outputs)]
@@ -142,6 +139,7 @@ class Decoder(nn.Module):
             y_all.append(predicted_y_t)
 
         y_all = torch.stack(y_all, dim=1)  # N x To x C
+
         # **********Cross Entropy Loss
         # F.cross_entropy = NLL(log_softmax(input), target))
         y_all = y_all.view(batch_size * output_length, self.vocab_size)
@@ -192,6 +190,7 @@ class Decoder(nn.Module):
                 vy[0] = hyp['yseq'][i]
                 embedded = self.embedding(vy)
                 # embedded.unsqueeze(0)
+
                 # step 1. decoder RNN: s_i = RNN(s_i−1,y_i−1,c_i−1)
                 rnn_input = torch.cat((embedded, hyp['a_prev']), dim=1)
                 h_list[0], c_list[0] = self.rnn[0](
@@ -200,11 +199,13 @@ class Decoder(nn.Module):
                     h_list[l], c_list[l] = self.rnn[l](
                         h_list[l - 1], (hyp['h_prev'][l], hyp['c_prev'][l]))
                 rnn_output = h_list[-1]
+
                 # step 2. attention: c_i = AttentionContext(s_i,h)
                 # below unsqueeze: (N x H) -> (N x 1 x H)
                 att_c, att_w = self.attention(rnn_output.unsqueeze(dim=1),
                                               encoder_outputs.unsqueeze(0))
                 att_c = att_c.squeeze(dim=1)
+
                 # step 3. concate s_i and c_i, and input to MLP
                 mlp_input = torch.cat((rnn_output, att_c), dim=1)
                 predicted_y_t = self.mlp(mlp_input)

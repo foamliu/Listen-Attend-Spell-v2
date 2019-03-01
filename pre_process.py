@@ -5,7 +5,7 @@ import librosa
 import numpy as np
 from tqdm import tqdm
 
-from config import dim, window_size, stride, cmvn
+from config import input_dim, window_size, stride, cmvn
 from config import pickle_file, train_folder, test_folder, data_folder
 
 
@@ -18,7 +18,7 @@ def extract_feature(input_file):
     y, sr = librosa.load(input_file, sr=None)
     ws = int(sr * 0.001 * window_size)
     st = int(sr * 0.001 * stride)
-    feat = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=dim, n_fft=ws, hop_length=st)
+    feat = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=input_dim, n_fft=ws, hop_length=st)
     feat = np.log(feat + 1e-6)
 
     feat = [feat]

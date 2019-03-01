@@ -18,8 +18,9 @@ def pad_collate(batch):
         max_target_len = max_target_len if max_target_len > len(trn) else len(trn)
 
     for i, elem in enumerate(batch):
-        feature, trn = elem
-        feature = np.pad(feature, (0, max_input_len - feature.shape[0]), 'constant', constant_values=0)
+        f, trn = elem
+        feature = np.zeros((f.shape[0], max_input_len), dtype=np.float)
+        feature[:f.shape[0], :f.shape[1]] = f
         trn = np.pad(trn, (0, max_target_len - len(trn)), 'constant', constant_values=0)
         batch[i] = (feature, trn)
         print('feature.shape: ' + str(feature.shape))

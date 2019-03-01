@@ -5,7 +5,10 @@ import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # sets device for model and PyTorch tensors
 
 # Model parameters
-
+dim = 40  # dimension of feature
+window_size = 25  # window size for FFT (ms)
+stride = 10  # window stride for FFT
+cmvn = True  # apply CMVN on feature
 
 # Training parameters
 num_workers = 1  # for data-loading; right now, only 1 works with h5py

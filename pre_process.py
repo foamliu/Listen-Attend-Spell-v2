@@ -1,7 +1,32 @@
 import os
 import pickle
 
+import librosa
+import numpy as np
+
+from config import dim, window_size, stride, cmvn
 from config import pickle_file, train_folder, test_folder, data_folder
+
+
+# Acoustic Feature Extraction
+# Parameters
+#     - input file  : str, audio file path
+# Return
+#     acoustic features with shape (time step, dim)
+def extract_feature(input_file):
+    y, sr = librosa.load(input_file, sr=None)
+    ws = int(sr * 0.001 * window_size)
+    st = int(sr * 0.001 * stride)
+    feat = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=dim, n_fft=ws, hop_length=st)
+    feat = np.log(feat + 1e-6)
+
+    feat = [feat]
+
+    feat = np.concatenate(feat, axis=0)
+    if cmvn:
+        feat = (feat - feat.mean(axis=1)[:, np.newaxis]) / (feat.std(axis=1) + 1e-16)[:, np.newaxis]
+
+    return np.swapaxes(feat, 0, 1).astype('float32')
 
 
 def get_data(mode):
@@ -20,7 +45,9 @@ def get_data(mode):
         trn = trn.strip().replace(' ', '')
         for token in trn:
             build_vocab(token)
-        samples.append({'wave': w, 'trn': trn})
+        wave = os.path.join(folder, w)
+        feature = extract_feature(wave)
+        samples.append({'feature': feature, 'trn': trn})
     return samples
 
 

@@ -106,8 +106,6 @@ def train(train_loader, encoder, decoder, optimizer, epoch, logger):
         # Forward prop.
         loss = model(features, input_lengths, trns)
 
-        print('loss.size(): ' + str(loss.size()))
-
         # Back prop.
         optimizer.zero_grad()
         loss.backward()

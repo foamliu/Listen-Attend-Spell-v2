@@ -82,7 +82,7 @@ def parse_args():
     parser.add_argument('--num-layers', type=int, default=4, help='number of encoder layers')
     parser.add_argument('--embedding-dim', type=int, default=512, help='embedding dimension')
     parser.add_argument('--end-epoch', type=int, default=30, help='training epoch size.')
-    parser.add_argument('--lr', type=float, default=0.001, help='start learning rate')
+    parser.add_argument('--lr', type=float, default=0.1, help='start learning rate')
     parser.add_argument('--lr-step', type=int, default=10, help='period of learning rate decay')
     parser.add_argument('--optimizer', default='sgd', help='optimizer')
     parser.add_argument('--weight-decay', type=float, default=0.0005, help='weight decay')

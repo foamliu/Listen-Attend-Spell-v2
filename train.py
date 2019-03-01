@@ -67,6 +67,7 @@ def train_net(args):
                            optimizer=optimizer,
                            epoch=epoch,
                            logger=logger)
+        logger.info('[Training] Accuracy : {:.4f}'.format(train_loss))
 
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,
@@ -74,6 +75,8 @@ def train_net(args):
                            decoder=decoder,
                            epoch=epoch,
                            logger=logger)
+
+        logger.info('[Validate] Accuracy : {:.4f}'.format(valid_loss))
 
         # Check if there was an improvement
         is_best = valid_loss < best_loss
@@ -147,12 +150,6 @@ def valid(valid_loader, encoder, decoder, epoch, logger):
 
         # Keep track of metrics
         losses.update(loss.item())
-
-        # Print status
-        if i % print_freq == 0:
-            logger.info('Epoch: [{0}][{1}/{2}]\t'
-                        'Loss {loss.val:.4f} ({loss.avg:.4f})'.format(epoch, i, len(valid_loader),
-                                                                      loss=losses))
 
     return losses.avg
 

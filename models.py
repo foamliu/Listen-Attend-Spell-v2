@@ -3,11 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
+from config import PAD_token, SOS_token, EOS_token
+from utils import pad_list
+
 
 class Seq2Seq(nn.Module):
-    """Sequence-to-Sequence architecture with configurable encoder and decoder.
-    """
-
     def __init__(self, encoder, decoder):
         super(Seq2Seq, self).__init__()
         self.encoder = encoder
@@ -40,14 +40,9 @@ class Seq2Seq(nn.Module):
         return nbest_hyps
 
 
-class Listener(nn.Module):
+class Encoder(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, dropout, bidirectional):
-        super(Listener, self).__init__()
-        self.input_size = input_size
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.bidirectional = bidirectional
-        self.dropout = dropout
+        super(Encoder, self).__init__()
         self.rnn = nn.GRU(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout,
                           bidirectional=bidirectional)
 
@@ -59,16 +54,14 @@ class Listener(nn.Module):
         return output, hidden
 
 
-class Speller(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, sos_id, eos_id, hidden_size,
+class Decoder(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, hidden_size,
                  num_layers, bidirectional_encoder=True):
-        super(Speller, self).__init__()
+        super(Decoder, self).__init__()
         # Hyper parameters
         # embedding + output
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
-        self.sos_id = sos_id  # Start of Sentence
-        self.eos_id = eos_id  # End of Sentence
         # rnn
         self.hidden_size = hidden_size
         self.num_layers = num_layers
@@ -104,16 +97,16 @@ class Speller(nn.Module):
         # *********Get Input and Output
         # from espnet/Decoder.forward()
         # TODO: need to make more smart way
-        ys = [y[y != IGNORE_ID] for y in padded_input]  # parse padded ys
+        ys = [y[y != PAD_token] for y in padded_input]  # parse padded ys
         # prepare input and output word sequences with sos/eos IDs
-        eos = ys[0].new([self.eos_id])
-        sos = ys[0].new([self.sos_id])
+        eos = ys[0].new([EOS_token])
+        sos = ys[0].new([SOS_token])
         ys_in = [torch.cat([sos, y], dim=0) for y in ys]
         ys_out = [torch.cat([y, eos], dim=0) for y in ys]
         # padding for ys with -1
         # pys: utt x olen
-        ys_in_pad = pad_list(ys_in, self.eos_id)
-        ys_out_pad = pad_list(ys_out, IGNORE_ID)
+        ys_in_pad = pad_list(ys_in, EOS_token)
+        ys_out_pad = pad_list(ys_out, PAD_token)
         # print("ys_in_pad", ys_in_pad.size())
         assert ys_in_pad.size() == ys_out_pad.size()
         batch_size = ys_in_pad.size(0)
@@ -155,7 +148,7 @@ class Speller(nn.Module):
         # F.cross_entropy = NLL(log_softmax(input), target))
         y_all = y_all.view(batch_size * output_length, self.vocab_size)
         ce_loss = F.cross_entropy(y_all, ys_out_pad.view(-1),
-                                  ignore_index=IGNORE_ID,
+                                  ignore_index=PAD_token,
                                   reduction='elementwise_mean')
 
         return ce_loss

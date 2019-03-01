@@ -10,9 +10,8 @@ from torch.optim.lr_scheduler import StepLR
 
 from config import device, grad_clip, print_freq
 from data_gen import Thchs30Dataset
-from focal_loss import FocalLoss
-from lfw_eval import lfw_test
-from models import resnet18, resnet34, resnet50, resnet101, resnet152, resnet_face18, ArcMarginModel
+
+from models import Seq2Seq, Encoder, Decoder
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, accuracy, get_logger
 
 
@@ -37,18 +36,8 @@ def train_net(args):
 
     # Initialize / load checkpoint
     if checkpoint is None:
-        if args.network == 'r18':
-            model = resnet18(args)
-        elif args.network == 'r34':
-            model = resnet34(args)
-        elif args.network == 'r50':
-            model = resnet50(args)
-        elif args.network == 'r101':
-            model = resnet101(args)
-        elif args.network == 'r152':
-            model = resnet152(args)
-        else:
-            model = resnet_face18(args.use_se)
+        encoder = Encoder()
+        decoder =  Decoder()
         model = nn.DataParallel(model)
         metric_fc = ArcMarginModel(args)
         metric_fc = nn.DataParallel(metric_fc)

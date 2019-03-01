@@ -20,6 +20,9 @@ print_freq = 100  # print training/validation stats  every __ batches
 checkpoint = None  # path to checkpoint, None if none
 
 # Data parameters
+PAD_token = 0
+SOS_token = 1
+EOS_token = 2
 num_train = 10000
 num_test = 2495
 DATA_DIR = 'data'

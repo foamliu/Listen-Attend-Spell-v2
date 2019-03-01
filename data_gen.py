@@ -18,7 +18,7 @@ def pad_collate(batch):
         max_target_len = max_target_len if max_target_len > len(trn) else len(trn)
 
     for i, elem in enumerate(batch):
-        f, trn, input_length = elem
+        f, trn = elem
         input_length = f.shape[0]
         input_dim = f.shape[1]
         # print('f.shape: ' + str(f.shape))

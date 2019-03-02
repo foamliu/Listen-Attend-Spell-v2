@@ -178,7 +178,7 @@ class Decoder(nn.Module):
         att_c = self.zero_state(encoder_outputs.unsqueeze(0),
                                 H=encoder_outputs.unsqueeze(0).size(2))
         # prepare sos
-        y = self.sos_id
+        y = SOS_token
         vy = encoder_outputs.new_zeros(1).long()
 
         hyp = {'score': 0.0, 'yseq': [y], 'c_prev': c_list, 'h_prev': h_list,

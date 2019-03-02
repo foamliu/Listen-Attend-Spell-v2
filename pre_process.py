@@ -57,7 +57,7 @@ def get_data(mode):
         if len(trn) > max_target_len:
             max_target_len = len(trn)
 
-        samples.append({'feature': feature, 'trn': trn})
+        samples.append({'feature': feature, 'trn': trn, 'wave': wave})
     return samples
 
 

@@ -43,6 +43,8 @@ def pad_collate(batch):
 #     acoustic features with shape (time step, dim)
 def extract_feature(input_file):
     y, sr = librosa.load(input_file, sr=None)
+    noise = np.random.randn(len(y))
+    y = y + 0.01 * noise
     ws = int(sr * 0.001 * window_size)
     st = int(sr * 0.001 * stride)
     feat = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=input_dim, n_fft=ws, hop_length=st)

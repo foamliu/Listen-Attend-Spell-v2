@@ -72,9 +72,7 @@ def train_net(args):
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,
                            encoder=encoder,
-                           decoder=decoder,
-                           epoch=epoch,
-                           logger=logger)
+                           decoder=decoder)
 
         logger.info('[Validate] Accuracy : {:.4f}'.format(valid_loss))
 
@@ -130,7 +128,7 @@ def train(train_loader, encoder, decoder, optimizer, epoch, logger):
     return losses.avg
 
 
-def valid(valid_loader, encoder, decoder, epoch, logger):
+def valid(valid_loader, encoder, decoder):
     encoder.eval()
     decoder.eval()
 

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     args = adict()
     args.beam_size = 20
     args.nbest = 5
-    args.decode_max_len = 0
+    args.decode_max_len = 40
 
     for i, sample in enumerate(samples):
         wave = sample['wave']

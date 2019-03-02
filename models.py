@@ -33,7 +33,7 @@ class Seq2Seq(nn.Module):
         Returns:
             nbest_hyps:
         """
-        encoder_outputs, _ = self.encoder(input.unsqueeze(0), input_length)
+        encoder_outputs, _ = self.encoder(input, input_length)
         nbest_hyps = self.decoder.recognize_beam(encoder_outputs[0],
                                                  char_list,
                                                  args)

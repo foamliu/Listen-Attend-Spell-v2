@@ -48,10 +48,10 @@ class Encoder(nn.Module):
 
     def forward(self, input_x, enc_len):
         total_length = input_x.size(1)  # get the max sequence length
-        print('total_length: ' + str(total_length))
-        print('input_x.size(): ' + str(input_x.size()))
+        # print('total_length: ' + str(total_length))
+        # print('input_x.size(): ' + str(input_x.size()))
         packed_input = pack_padded_sequence(input_x, enc_len, batch_first=True)
-        print('enc_len: ' + str(enc_len))
+        # print('enc_len: ' + str(enc_len))
         packed_output, hidden = self.rnn(packed_input)
         output, _ = pad_packed_sequence(packed_output, batch_first=True, total_length=total_length)
         return output, hidden

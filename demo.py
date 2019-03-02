@@ -42,8 +42,6 @@ if __name__ == '__main__':
     args.beam_size = 20
     args.nbest = 5
 
-    batch = []
-
     for i, sample in enumerate(samples):
         wave = sample['wave']
         dst = os.path.join('waves', '{}.wav'.format(i))
@@ -56,17 +54,11 @@ if __name__ == '__main__':
         transcript = ''.join(transcript)
         print(transcript)
 
-        batch.append((feature, trn))
+        batch = [(feature, trn)]
+        data = pad_collate(batch)
+        _features, _trns, _input_lengths = data
+        _features = _features.float().to(device)
+        _input_lengths = _input_lengths.long().to(device)
 
-    data = pad_collate(batch)
-    _features, _trns, _input_lengths = data
-    _features = _features.float().to(device)
-    _input_lengths = _input_lengths.long().to(device)
-    print('_features.size(): ' + str(_features.size()))
-    print('_input_lengths.size(): ' + str(_input_lengths.size()))
-
-    print('encoder: ' + str(encoder))
-    encoder_outputs, _ = encoder(_features, _input_lengths)
-
-    # nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
-    print('encoder_outputs.size(): ' + str(encoder_outputs.size()))
+        nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
+        print('nbest_hyps.size(): ' + str(nbest_hyps.size()))

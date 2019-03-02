@@ -56,5 +56,3 @@ if __name__ == "__main__":
     print('num_train: ' + str(len(data['train'])))
     print('num_test: ' + str(len(data['test'])))
     print('vocab_size: ' + str(len(data['VOCAB'])))
-    print('max_input_len: ' + str(max_input_len))
-    print('max_target_len: ' + str(max_target_len))

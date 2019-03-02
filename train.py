@@ -52,7 +52,7 @@ def train_net(args):
                                                shuffle=True)
     valid_dataset = Thchs30Dataset('test')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
-                                               shuffle=False)
+                                               shuffle=False, drop_last=True)
 
     scheduler = StepLR(optimizer, step_size=args.lr_step, gamma=0.5)
 

@@ -60,8 +60,8 @@ if __name__ == '__main__':
 
     data = pad_collate(batch)
     _features, _trns, _input_lengths = data
-    _features = _features.to(device)
-    _input_lengths = _input_lengths.to(device)
+    _features = _features.float().to(device)
+    _input_lengths = _input_lengths.long().to(device)
     print('_features.size(): ' + str(_features.size()))
     print('_input_lengths.size(): ' + str(_input_lengths.size()))
 

@@ -42,13 +42,14 @@ if __name__ == '__main__':
     args.nbest = 5
 
     for i, sample in enumerate(samples):
+        wave = sample['wave']
+        dst = os.path.join('waves', '{}.wav'.format(i))
+        copyfile(wave, dst)
+        print(wave)
+
         feature = torch.FloatTensor(sample['feature'])
         trn = torch.LongTensor(sample['trn'])
         input_length = torch.LongTensor(len(trn))
 
         nbest_hyps = model.recognize(feature, input_length, char_list, args)
         print(nbest_hyps)
-
-        wave = sample['wave']
-        dst = os.path.join('waves', '{}.wav'.format(i))
-        copyfile(wave, dst)

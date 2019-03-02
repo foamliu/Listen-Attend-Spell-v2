@@ -5,7 +5,7 @@ from shutil import copyfile
 
 import torch
 
-from config import pickle_file
+from config import pickle_file, device
 from data_gen import pad_collate
 from models import Seq2Seq
 from utils import ensure_folder
@@ -57,5 +57,5 @@ if __name__ == '__main__':
         data = pad_collate(batch)
         _features, _trns, _input_lengths = data
 
-        nbest_hyps = model.recognize(_features[0], _input_lengths, char_list, args)
+        nbest_hyps = model.recognize(_features[0].to(device), _input_lengths.to(device), char_list, args)
         print(nbest_hyps)

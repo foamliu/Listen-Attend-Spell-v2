@@ -22,8 +22,8 @@ def train_net(args):
         encoder = Encoder(args.input_dim, args.encoder_hidden_size, args.num_layers)
         decoder = Decoder(vocab_size, args.embedding_dim, args.decoder_hidden_size)
 
-        encoder = nn.DataParallel(encoder)
-        decoder = nn.DataParallel(decoder)
+        # encoder = nn.DataParallel(encoder)
+        # decoder = nn.DataParallel(decoder)
 
         if args.optimizer == 'sgd':
             optimizer = torch.optim.SGD([{'params': encoder.parameters()}, {'params': decoder.parameters()}],
@@ -50,9 +50,9 @@ def train_net(args):
     train_dataset = Thchs30Dataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=True)
-    valid_dataset = Thchs30Dataset('train')
+    valid_dataset = Thchs30Dataset('test')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
-                                               shuffle=False)
+                                               shuffle=False, drop_last=True)
 
     scheduler = StepLR(optimizer, step_size=args.lr_step, gamma=0.5)
 
@@ -72,9 +72,7 @@ def train_net(args):
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,
                            encoder=encoder,
-                           decoder=decoder,
-                           epoch=epoch,
-                           logger=logger)
+                           decoder=decoder)
 
         logger.info('[Validate] Accuracy : {:.4f}'.format(valid_loss))
 
@@ -130,7 +128,7 @@ def train(train_loader, encoder, decoder, optimizer, epoch, logger):
     return losses.avg
 
 
-def valid(valid_loader, encoder, decoder, epoch, logger):
+def valid(valid_loader, encoder, decoder):
     encoder.eval()
     decoder.eval()
 

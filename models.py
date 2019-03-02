@@ -33,7 +33,7 @@ class Seq2Seq(nn.Module):
         Returns:
             nbest_hyps:
         """
-        encoder_outputs, _ = self.encoder(input.unsqueeze(0), input_length)
+        encoder_outputs, _ = self.encoder(input, input_length)
         nbest_hyps = self.decoder.recognize_beam(encoder_outputs[0],
                                                  char_list,
                                                  args)
@@ -48,7 +48,10 @@ class Encoder(nn.Module):
 
     def forward(self, input_x, enc_len):
         total_length = input_x.size(1)  # get the max sequence length
+        # print('total_length: ' + str(total_length))
+        # print('input_x.size(): ' + str(input_x.size()))
         packed_input = pack_padded_sequence(input_x, enc_len, batch_first=True)
+        # print('enc_len: ' + str(enc_len))
         packed_output, hidden = self.rnn(packed_input)
         output, _ = pad_packed_sequence(packed_output, batch_first=True, total_length=total_length)
         return output, hidden
@@ -175,7 +178,7 @@ class Decoder(nn.Module):
         att_c = self.zero_state(encoder_outputs.unsqueeze(0),
                                 H=encoder_outputs.unsqueeze(0).size(2))
         # prepare sos
-        y = self.sos_id
+        y = SOS_token
         vy = encoder_outputs.new_zeros(1).long()
 
         hyp = {'score': 0.0, 'yseq': [y], 'c_prev': c_list, 'h_prev': h_list,
@@ -236,13 +239,13 @@ class Decoder(nn.Module):
             # add eos in the final loop to avoid that there are no ended hyps
             if i == maxlen - 1:
                 for hyp in hyps:
-                    hyp['yseq'].append(self.eos_id)
+                    hyp['yseq'].append(EOS_token)
 
             # add ended hypothes to a final list, and removed them from current hypothes
             # (this will be a probmlem, number of hyps < beam)
             remained_hyps = []
             for hyp in hyps:
-                if hyp['yseq'][-1] == self.eos_id:
+                if hyp['yseq'][-1] == EOS_token:
                     # hyp['score'] += (i + 1) * penalty
                     ended_hyps.append(hyp)
                 else:

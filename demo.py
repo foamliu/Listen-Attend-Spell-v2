@@ -46,7 +46,7 @@ if __name__ == '__main__':
         trn = sample['trn']
         wave = sample['wave']
         input_length = len(trn)
-        nbest_hyps = model(feature, input_length, char_list, args)
+        nbest_hyps = model.recognize(feature, input_length, char_list, args)
         print(nbest_hyps)
 
         dst = os.path.join('waves', '{}.wav'.format(i))

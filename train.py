@@ -22,8 +22,8 @@ def train_net(args):
         encoder = Encoder(args.input_dim, args.encoder_hidden_size, args.num_layers)
         decoder = Decoder(vocab_size, args.embedding_dim, args.decoder_hidden_size)
 
-        # encoder = nn.DataParallel(encoder)
-        # decoder = nn.DataParallel(decoder)
+        encoder = nn.DataParallel(encoder)
+        decoder = nn.DataParallel(decoder)
 
         if args.optimizer == 'sgd':
             optimizer = torch.optim.SGD([{'params': encoder.parameters()}, {'params': decoder.parameters()}],

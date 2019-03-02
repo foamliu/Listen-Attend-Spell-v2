@@ -51,7 +51,7 @@ class Encoder(nn.Module):
         print('total_length: ' + str(total_length))
         print('input_x.size(): ' + str(input_x.size()))
         packed_input = pack_padded_sequence(input_x, enc_len, batch_first=True)
-        print('packed_input.size(): ' + str(packed_input.size()))
+        print('enc_len: ' + str(enc_len))
         packed_output, hidden = self.rnn(packed_input)
         output, _ = pad_packed_sequence(packed_output, batch_first=True, total_length=total_length)
         return output, hidden

@@ -51,6 +51,7 @@ if __name__ == '__main__':
         feature = sample['feature']
         trn = sample['trn']
         transcript = [IVOCAB[token_id] for token_id in trn]
+        transcript = ''.join(transcript)
         print(transcript)
         batch = [(feature, trn)]
         data = pad_collate(batch)

@@ -239,13 +239,13 @@ class Decoder(nn.Module):
             # add eos in the final loop to avoid that there are no ended hyps
             if i == maxlen - 1:
                 for hyp in hyps:
-                    hyp['yseq'].append(self.eos_id)
+                    hyp['yseq'].append(EOS_token)
 
             # add ended hypothes to a final list, and removed them from current hypothes
             # (this will be a probmlem, number of hyps < beam)
             remained_hyps = []
             for hyp in hyps:
-                if hyp['yseq'][-1] == self.eos_id:
+                if hyp['yseq'][-1] == EOS_token:
                     # hyp['score'] += (i + 1) * penalty
                     ended_hyps.append(hyp)
                 else:

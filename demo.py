@@ -6,6 +6,7 @@ from shutil import copyfile
 import torch
 
 from config import pickle_file
+from data_gen import pad_collate
 from models import Seq2Seq
 from utils import ensure_folder
 
@@ -47,9 +48,12 @@ if __name__ == '__main__':
         copyfile(wave, dst)
         print(wave)
 
-        feature = torch.FloatTensor(sample['feature'])
-        trn = torch.LongTensor(sample['trn'])
-        input_length = torch.LongTensor(len(trn))
+        feature = sample['feature']
+        trn = sample['trn']
+        print(trn)
+        batch = [(feature, trn)]
+        data = pad_collate(batch)
+        _features, _trns, _input_lengths = data
 
-        nbest_hyps = model.recognize(feature, input_length, char_list, args)
+        nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
         print(nbest_hyps)

@@ -39,8 +39,8 @@ if __name__ == '__main__':
     ensure_folder('waves')
 
     args = adict()
-    args.beam_size = 20
-    args.nbest = 5
+    args.beam_size = 10
+    args.nbest = 1
     args.decode_max_len = 40
 
     for i, sample in enumerate(samples):

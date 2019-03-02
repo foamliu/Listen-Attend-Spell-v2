@@ -65,6 +65,7 @@ if __name__ == '__main__':
     print('_features.size(): ' + str(_features.size()))
     print('_input_lengths.size(): ' + str(_input_lengths.size()))
 
+    print('encoder: ' + str(encoder))
     encoder_outputs, _ = encoder(_features, _input_lengths)
 
     # nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)

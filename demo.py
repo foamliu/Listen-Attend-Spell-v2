@@ -50,10 +50,11 @@ if __name__ == '__main__':
 
         feature = sample['feature']
         trn = sample['trn']
-        print(trn)
+        transcript = [IVOCAB[token_id] for token_id in trn]
+        print(transcript)
         batch = [(feature, trn)]
         data = pad_collate(batch)
         _features, _trns, _input_lengths = data
 
-        nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
+        nbest_hyps = model.recognize(_features[0], _input_lengths, char_list, args)
         print(nbest_hyps)

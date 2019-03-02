@@ -63,3 +63,4 @@ if __name__ == '__main__':
 
         nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
         print('nbest_hyps.size(): ' + str(nbest_hyps.size()))
+        break

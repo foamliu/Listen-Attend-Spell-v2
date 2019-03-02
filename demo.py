@@ -56,6 +56,8 @@ if __name__ == '__main__':
         batch = [(feature, trn)]
         data = pad_collate(batch)
         _features, _trns, _input_lengths = data
+        _features = _features.to(device)
+        _input_lengths = _input_lengths.to(device)
 
-        nbest_hyps = model.recognize(_features[0].to(device), _input_lengths.to(device), char_list, args)
+        nbest_hyps = model.recognize(_features[0], _input_lengths[0], char_list, args)
         print(nbest_hyps)

@@ -58,6 +58,8 @@ if __name__ == '__main__':
         _features, _trns, _input_lengths = data
         _features = _features.to(device)
         _input_lengths = _input_lengths.to(device)
+        print('_features.size(): ' + str(_features.size()))
+        print('_input_lengths.size(): ' + str(_input_lengths.size()))
 
         nbest_hyps = model.recognize(_features[0], _input_lengths[0], char_list, args)
         print(nbest_hyps)

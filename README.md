@@ -40,7 +40,7 @@ $ wget http://www.openslr.org/resources/18/resource.tgz
 ## Usage
 
 ### Data wrangling
-Extract images, scan them, to get bounding boxes and landmarks:
+Extract audio and transcript data, scan them, to get features:
 ```bash
 $ python extract.py
 $ python pre_process.py

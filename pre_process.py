@@ -32,15 +32,16 @@ def get_data(mode):
             wave = os.path.join(dir, f)
 
             key = f.split('.')[0]
-            trn = tran_dict[key]
-            trn = list(trn.strip()) + ['<EOS>']
+            if key in tran_dict:
+                trn = tran_dict[key]
+                trn = list(trn.strip()) + ['<EOS>']
 
-            for token in trn:
-                build_vocab(token)
+                for token in trn:
+                    build_vocab(token)
 
-            trn = [VOCAB[token] for token in trn]
+                trn = [VOCAB[token] for token in trn]
 
-            samples.append({'trn': trn, 'wave': wave})
+                samples.append({'trn': trn, 'wave': wave})
 
     return samples
 

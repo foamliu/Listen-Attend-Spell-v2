@@ -9,46 +9,38 @@ from config import wav_folder, tran_file, pickle_file
 def get_data(mode):
     print('getting {} data...'.format(mode))
 
+    global VOCAB
+
     with open(tran_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
     tran_dict = dict()
-    for line in tqdm(lines):
+    for line in lines:
         tokens = line.split()
         key = tokens[0]
         trn = ''.join(tokens[1:])
         tran_dict[key] = trn
 
+    samples = []
+
     folder = os.path.join(wav_folder, mode)
     dirs = [os.path.join(folder, d) for d in os.listdir(folder) if os.path.isdir(os.path.join(folder, d))]
-    for dir in dirs:
+    for dir in tqdm(dirs):
         files = [f for f in os.listdir(dir) if f.endswith('.wav')]
 
         for f in files:
+            wave = os.path.join(dir, f)
+
             key = f.split('.')[0]
             trn = tran_dict[key]
             trn = list(trn.strip()) + ['<EOS>']
+            trn = [VOCAB[token] for token in trn]
+
             for token in trn:
                 build_vocab(token)
-            file_name = os.path.join(dir, f)
 
+            samples.append({'trn': trn, 'wave': wave})
 
-
-    global VOCAB
-
-
-
-    samples = []
-    waves = [f for f in os.listdir(folder) if f.lower().endswith('.wav')]
-    for w in tqdm(waves):
-        wave = os.path.join(folder, w)
-
-
-        trn = list(trn.strip().replace(' ', '')) + ['<EOS>']
-
-        trn = [VOCAB[token] for token in trn]
-
-        samples.append({'trn': trn, 'wave': wave})
     return samples
 
 

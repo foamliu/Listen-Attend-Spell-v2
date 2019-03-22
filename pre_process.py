@@ -34,10 +34,11 @@ def get_data(mode):
             key = f.split('.')[0]
             trn = tran_dict[key]
             trn = list(trn.strip()) + ['<EOS>']
-            trn = [VOCAB[token] for token in trn]
 
             for token in trn:
                 build_vocab(token)
+
+            trn = [VOCAB[token] for token in trn]
 
             samples.append({'trn': trn, 'wave': wave})
 

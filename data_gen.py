@@ -59,15 +59,12 @@ def extract_feature(input_file):
     return np.swapaxes(feat, 0, 1).astype('float32')
 
 
-class Thchs30Dataset(Dataset):
-    def __init__(self, split):
+class AiShellDataset(Dataset):
+    def __init__(self, mode):
         with open(pickle_file, 'rb') as file:
             data = pickle.load(file)
 
-        if split == 'train':
-            self.samples = data['train']
-        else:
-            self.samples = data['test']
+        self.samples = data[mode]
 
     def __getitem__(self, i):
         sample = self.samples[i]
@@ -82,7 +79,7 @@ class Thchs30Dataset(Dataset):
 
 
 if __name__ == "__main__":
-    train_dataset = Thchs30Dataset('train')
+    train_dataset = AiShellDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=num_workers,
                                                pin_memory=True)
 

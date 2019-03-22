@@ -4,7 +4,7 @@ from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
 from config import device, grad_clip, print_freq, vocab_size
-from data_gen import Thchs30Dataset, pad_collate
+from data_gen import AiShellDataset, pad_collate
 from models import Encoder, Decoder, Seq2Seq
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger
 
@@ -47,10 +47,10 @@ def train_net(args):
     decoder = decoder.to(device)
 
     # Custom dataloaders
-    train_dataset = Thchs30Dataset('train')
+    train_dataset = AiShellDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=True)
-    valid_dataset = Thchs30Dataset('test')
+    valid_dataset = AiShellDataset('dev')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=False, drop_last=True)
 

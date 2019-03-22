@@ -25,11 +25,10 @@ checkpoint = None  # path to checkpoint, None if none
 PAD_token = 0
 SOS_token = 1
 EOS_token = 2
-num_samples = 141600
 num_train = 120418
-num_dev = 14331
+num_dev = 14326
 num_test = 7176
-vocab_size = 2886
+vocab_size = 4336
 
 DATA_DIR = 'data'
 aishell_folder = 'data/data_aishell'

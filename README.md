@@ -5,7 +5,7 @@
 PyTorch implementation of Listen Attend and Spell Automatic Speech Recognition (ASR).
 [paper](https://arxiv.org/abs/1508.01211).
 ```
-@article{deng2018arcface,
+@article{chan2015las,
 title={Listen, Attend and Spell},
 author={William Chan, Navdeep Jaitly, Quoc V. Le, Oriol Vinyals},
 journal={arXiv:1508.01211},
@@ -15,22 +15,24 @@ year={2015}
 ## DataSet
 
 ### Introduction
-THCHS30 is an open Chinese speech database published by Center for Speech and Language Technology (CSLT) at Tsinghua University.[link](http://www.openslr.org/18/)
+Aishell is an open-source Chinese Mandarin speech corpus published by Beijing Shell Shell Technology Co.,Ltd.
+
+400 people from different accent areas in China are invited to participate in the recording, which is conducted in a quiet indoor environment using high fidelity microphone and downsampled to 16kHz. The manual transcription accuracy is above 95%, through professional speech annotation and strict quality inspection. The data is free for academic use. We hope to provide moderate amount of data for new researchers in the field of speech recognition.
+
 ```
-@misc{THCHS30_2015,
-  title={THCHS-30 : A Free Chinese Speech Corpus},
-  author={Dong Wang, Xuewei Zhang, Zhiyong Zhang},
-  year={2015},
-  url={http://arxiv.org/abs/1512.01882}
+@inproceedings{aishell_2017,
+  title={AIShell-1: An Open-Source Mandarin Speech Corpus and A Speech Recognition Baseline},
+  author={Hui Bu, Jiayu Du, Xingyu Na, Bengu Wu, Hao Zheng},
+  booktitle={Oriental COCOSDA 2017},
+  pages={Submitted},
+  year={2017}
 }
 ```
 
 ### Obtain
 Create a data folder then run:
 ```bash
-$ wget http://www.openslr.org/resources/18/data_thchs30.tgz
-$ wget http://www.openslr.org/resources/18/test-noise.tgz
-$ wget http://www.openslr.org/resources/18/resource.tgz
+$ wget http://www.openslr.org/resources/33/data_aishell.tgz
 ```
 
 ## Dependencies

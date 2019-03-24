@@ -4,7 +4,7 @@ import random
 from shutil import copyfile
 
 import torch
-
+from utils import extract_feature
 from config import pickle_file, device
 from data_gen import pad_collate
 from models import Seq2Seq
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         copyfile(wave, dst)
         print(wave)
 
-        feature = sample['feature']
+        feature = extract_feature(wave)
         trn = sample['trn']
         transcript = [IVOCAB[token_id] for token_id in trn]
         transcript = ''.join(transcript)

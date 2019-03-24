@@ -2,6 +2,7 @@ import argparse
 import logging
 
 import librosa
+import numpy as np
 import torch
 
 from config import input_dim, window_size, stride, cmvn

@@ -20,8 +20,8 @@ class adict(dict):
 if __name__ == '__main__':
     checkpoint = 'BEST_checkpoint.tar'
     checkpoint = torch.load(checkpoint)
-    encoder = checkpoint['encoder']
-    decoder = checkpoint['decoder']
+    encoder = checkpoint['encoder'].module
+    decoder = checkpoint['decoder'].module
     encoder.eval()
     decoder.eval()
     model = Seq2Seq(encoder, decoder)

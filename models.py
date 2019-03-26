@@ -253,14 +253,15 @@ class Decoder(nn.Module):
 
             hyps = remained_hyps
             if len(hyps) > 0:
-                print('remeined hypothes: ' + str(len(hyps)))
+                pass
+                # print('remeined hypothes: ' + str(len(hyps)))
             else:
-                print('no hypothesis. Finish decoding.')
+                # print('no hypothesis. Finish decoding.')
                 break
 
-            for hyp in hyps:
-                print('hypo: ' + ''.join([char_list[int(x)]
-                                          for x in hyp['yseq'][1:]]))
+            # for hyp in hyps:
+            #     print('hypo: ' + ''.join([char_list[int(x)]
+            #                               for x in hyp['yseq'][1:]]))
         # end for i in range(maxlen)
         nbest_hyps = sorted(ended_hyps, key=lambda x: x['score'], reverse=True)[
                      :min(len(ended_hyps), nbest)]

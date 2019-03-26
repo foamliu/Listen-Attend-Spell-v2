@@ -1,13 +1,12 @@
 import pickle
 
-import librosa
 import numpy as np
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data.dataloader import default_collate
 
-from config import input_dim, window_size, stride, cmvn
 from config import num_workers, pickle_file
+from utils import extract_feature
 
 
 def pad_collate(batch):
@@ -34,29 +33,6 @@ def pad_collate(batch):
     batch.sort(key=lambda x: x[2], reverse=True)
 
     return default_collate(batch)
-
-
-# Acoustic Feature Extraction
-# Parameters
-#     - input file  : str, audio file path
-# Return
-#     acoustic features with shape (time step, dim)
-def extract_feature(input_file):
-    y, sr = librosa.load(input_file, sr=None)
-    noise = np.random.randn(len(y))
-    y = y + 0.01 * noise
-    ws = int(sr * 0.001 * window_size)
-    st = int(sr * 0.001 * stride)
-    feat = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=input_dim, n_fft=ws, hop_length=st)
-    feat = np.log(feat + 1e-6)
-
-    feat = [feat]
-
-    feat = np.concatenate(feat, axis=0)
-    if cmvn:
-        feat = (feat - feat.mean(axis=1)[:, np.newaxis]) / (feat.std(axis=1) + 1e-16)[:, np.newaxis]
-
-    return np.swapaxes(feat, 0, 1).astype('float32')
 
 
 class AiShellDataset(Dataset):

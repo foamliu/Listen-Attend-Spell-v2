@@ -9,6 +9,7 @@ from config import pickle_file, device
 from data_gen import pad_collate
 from models import Seq2Seq
 from utils import ensure_folder
+from utils import extract_feature
 
 
 class adict(dict):
@@ -20,8 +21,8 @@ class adict(dict):
 if __name__ == '__main__':
     checkpoint = 'BEST_checkpoint.tar'
     checkpoint = torch.load(checkpoint)
-    encoder = checkpoint['encoder']
-    decoder = checkpoint['decoder']
+    encoder = checkpoint['encoder'].module
+    decoder = checkpoint['decoder'].module
     encoder.eval()
     decoder.eval()
     model = Seq2Seq(encoder, decoder)
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     ensure_folder('waves')
 
     args = adict()
-    args.beam_size = 10
+    args.beam_size = 5
     args.nbest = 1
     args.decode_max_len = 40
 
@@ -49,7 +50,7 @@ if __name__ == '__main__':
         copyfile(wave, dst)
         print(wave)
 
-        feature = sample['feature']
+        feature = extract_feature(wave)
         trn = sample['trn']
         transcript = [IVOCAB[token_id] for token_id in trn]
         transcript = ''.join(transcript)
@@ -62,5 +63,6 @@ if __name__ == '__main__':
         _input_lengths = _input_lengths.long().to(device)
 
         nbest_hyps = model.recognize(_features, _input_lengths, char_list, args)
-        print('nbest_hyps: ' + str(nbest_hyps))
-        break
+
+        nbest_hyps = ''.join([char_list[int(x)] for x in nbest_hyps[0]['yseq'][1:]])
+        print('nbest_hyps: ' + nbest_hyps)

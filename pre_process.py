@@ -4,6 +4,7 @@ import pickle
 from tqdm import tqdm
 
 from config import wav_folder, tran_file, pickle_file
+from utils import ensure_folder
 
 
 def get_data(mode):
@@ -24,6 +25,7 @@ def get_data(mode):
     samples = []
 
     folder = os.path.join(wav_folder, mode)
+    ensure_folder(folder)
     dirs = [os.path.join(folder, d) for d in os.listdir(folder) if os.path.isdir(os.path.join(folder, d))]
     for dir in tqdm(dirs):
         files = [f for f in os.listdir(dir) if f.endswith('.wav')]

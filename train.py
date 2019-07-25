@@ -1,8 +1,7 @@
 import numpy as np
 import torch
 from torch import nn
-from torch.optim.lr_scheduler import StepLR
-
+from tensorboardX import SummaryWriter
 from config import device, grad_clip, print_freq, vocab_size
 from data_gen import AiShellDataset, pad_collate
 from models import Encoder, Decoder, Seq2Seq
@@ -15,6 +14,7 @@ def train_net(args):
     checkpoint = args.checkpoint
     start_epoch = 0
     best_loss = float('inf')
+    writer = SummaryWriter()
     epochs_since_improvement = 0
 
     # Initialize / load checkpoint
@@ -54,12 +54,9 @@ def train_net(args):
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=False, drop_last=True)
 
-    scheduler = StepLR(optimizer, step_size=args.lr_step, gamma=0.2)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):
-        scheduler.step()
-
         # One epoch's training
         train_loss = train(train_loader=train_loader,
                            encoder=encoder,
@@ -67,13 +64,14 @@ def train_net(args):
                            optimizer=optimizer,
                            epoch=epoch,
                            logger=logger)
+        writer.add_scalar('Train_Loss', train_loss, epoch)
         logger.info('[Training] Accuracy : {:.4f}'.format(train_loss))
 
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,
                            encoder=encoder,
                            decoder=decoder)
-
+        writer.add_scalar('Valid_Loss', valid_loss, epoch)
         logger.info('[Validate] Accuracy : {:.4f}'.format(valid_loss))
 
         # Check if there was an improvement

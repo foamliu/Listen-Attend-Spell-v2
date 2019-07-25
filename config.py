@@ -16,7 +16,7 @@ num_layers = 4
 # Training parameters
 batch_size = 32
 lr = 1e-3
-num_workers = 4  # for data-loading
+num_workers = 8  # for data-loading
 grad_clip = 5.  # clip gradients at an absolute value of
 print_freq = 10  # print training/validation stats  every __ batches
 checkpoint = None  # path to checkpoint, None if none

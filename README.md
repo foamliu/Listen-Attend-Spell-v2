@@ -66,3 +66,4 @@ $ python demo.py
 ## Results
 
 ## Reference
+[1] W. Chan, N. Jaitly, Q. Le, and O. Vinyals, “Listen, attend and spell: A neural network for large vocabulary conversational speech recognition,” in ICASSP 2016. (https://arxiv.org/abs/1508.01211v2)

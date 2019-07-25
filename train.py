@@ -1,7 +1,8 @@
 import numpy as np
 import torch
-from torch import nn
 from tensorboardX import SummaryWriter
+from torch import nn
+
 from config import device, grad_clip, print_freq, vocab_size
 from data_gen import AiShellDataset, pad_collate
 from models import Encoder, Decoder, Seq2Seq
@@ -53,7 +54,6 @@ def train_net(args):
     valid_dataset = AiShellDataset('dev')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
                                                shuffle=False, drop_last=True)
-
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):

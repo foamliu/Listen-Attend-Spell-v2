@@ -3,7 +3,7 @@ import torch
 from tensorboardX import SummaryWriter
 from torch import nn
 
-from config import device, grad_clip, print_freq, vocab_size
+from config import device, grad_clip, print_freq, vocab_size, num_workers
 from data_gen import AiShellDataset, pad_collate
 from models import Encoder, Decoder, Seq2Seq
 from utils import parse_args, save_checkpoint, AverageMeter, clip_gradient, get_logger
@@ -50,10 +50,10 @@ def train_net(args):
     # Custom dataloaders
     train_dataset = AiShellDataset('train')
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
-                                               shuffle=True)
+                                               shuffle=True, num_workers=num_workers)
     valid_dataset = AiShellDataset('dev')
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=pad_collate,
-                                               shuffle=False, drop_last=True)
+                                               shuffle=False, num_workers=num_workers, drop_last=True)
 
     # Epochs
     for epoch in range(start_epoch, args.end_epoch):

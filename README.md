@@ -70,6 +70,7 @@ data/
             train/
             dev/
             test/
+    aishell.pickle
 </pre>
 
 ### Train
